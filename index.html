@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            
         }
 
         label {
@@ -34,6 +35,19 @@
             margin-top: 20px;
             font-weight: bold;
         }
+        body {
+            
+  background-image: url("https://img.freepik.com/premium-vector/stock-market-investment-trading-graph-graphic-concept-suitable-financial-investment_258787-31.jpg");
+}
+footer{
+    text-align: center;
+
+    position: absolute; bottom: 0; left: 0; right: 0;
+
+}
+h1 { 
+    text-align: center; 
+}
     </style>
 </head>
 <body>
@@ -49,6 +63,22 @@
 
     <div id="result"></div>
     
+    <h1>Stock Data</h1>
+<label for="stock-symbol">Select Stock Symbol:</label>
+<select id="stock-symbol" onchange="fetchStockData()">
+    <option value="AAPL">AAPL (Apple Inc.)</option>
+    <option value="GOOGL">GOOGL (Alphabet Inc.)</option>
+    <option value="QQQ">QQQ (NASDAQ)</option>
+    <option value="AMZN">AMAZON (Amazon.com Inc.)</option>
+    <option value="TSLA">TESLA (Tesla Inc.)</option>
+    <option value="MSFT">MICROSOFT (Microsoft Corporation)</option>
+    <option value="NVDA">NVIDIA (Nvidia Corporation)</option>
+    <option value="TD">TD (Toronto-Dominion Bank)</option>
+
+</select>
+
+<div id="stock-data"></div>
+
 
     <script>
         function calculateRisk() {
@@ -61,6 +91,43 @@
             
             document.getElementById('result').innerText = `You are risking $${riskAmount.toFixed(2)} dollars.`;
         }
+
+       
+    const apiKey = 'YO1BY63IF6LATX7I9Q';
+
+
+async function fetchStockData() {
+    const symbol = document.getElementById('stock-symbol').value;
+
+    try {
+        const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${apiKey}`);
+        const data = await response.json();
+
+       
+        console.log(data);
+
+        
+        const stockData = data['Time Series (5min)'];
+        const firstDataPoint = Object.keys(stockData)[0];
+        const stockInfo = stockData[firstDataPoint];
+
+        document.getElementById('stock-data').innerHTML = `
+            <p>Symbol: ${symbol}</p>
+            <p>Open: ${stockInfo['1. open']}</p>
+            <p>High: ${stockInfo['2. high']}</p>
+            <p>Low: ${stockInfo['3. low']}</p>
+            <p>Close: ${stockInfo['4. close']}</p>
+            <p>Volume: ${stockInfo['5. volume']}</p>
+        `;
+    } catch (error) {
+        console.error('Error fetching stock data:', error);
+    }
+}
+
+fetchStockData();
     </script>
+    <footer>
+        <p>@Rahinur Website</p>
+      </footer>
 </body>
 </html>
